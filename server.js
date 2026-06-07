@@ -210,9 +210,7 @@ app.get("/api/admin/menu", requireAdmin , async (req, res) => {
 
 app.post("/api/admin/menu", requireAdmin, async (req, res) => {
   try {
-    console.log("BODY RECEIVED:", req.body);
     const { name, description, price, category, available, trstyle } = req.body;
-    console.log("trstyle:", trstyle);
     const result = await pool.query(
       `
       INSERT INTO menu_items 
