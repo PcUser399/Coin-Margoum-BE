@@ -193,12 +193,11 @@ app.get("/api/menu", async (req, res) => {
   }
 });
 
-app.get("/api/menu", async (req, res) => {
+app.get("/api/admin/menu", requireAdmin , async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT *
       FROM menu_items
-      WHERE available = true
       ORDER BY category, id;
     `);
 
