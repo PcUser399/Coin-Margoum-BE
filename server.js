@@ -42,7 +42,7 @@ async function initDB() {
         category TEXT,
         image_url TEXT,
         available BOOLEAN DEFAULT true,
-        trStyle  BOOLEAN DEFAULT false,
+        trstyle  BOOLEAN DEFAULT false,
         created_at TIMESTAMP DEFAULT NOW()
       );
     `);
@@ -211,16 +211,16 @@ app.get("/api/admin/menu", requireAdmin , async (req, res) => {
 app.post("/api/admin/menu", requireAdmin, async (req, res) => {
   try {
     console.log("BODY RECEIVED:", req.body);
-    const { name, description, price, category, available, trStyle } = req.body;
-    console.log("TRSTYLE:", trStyle);
+    const { name, description, price, category, available, trstyle } = req.body;
+    console.log("trstyle:", trstyle);
     const result = await pool.query(
       `
       INSERT INTO menu_items 
-      (name, description, price, category, image_url, available, trStyle)
+      (name, description, price, category, image_url, available, trstyle)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *
       `,
-      [name, description, price, category, null, available, trStyle]
+      [name, description, price, category, null, available, trstyle]
     );
     console.log("UPDATED ROW:", result.rows[0]);
 
@@ -234,7 +234,7 @@ app.post("/api/admin/menu", requireAdmin, async (req, res) => {
 app.put("/api/admin/menu/:id", requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, category, available, trStyle } = req.body;
+    const { name, description, price, category, available, trstyle } = req.body;
 
     const result = await pool.query(
       `
@@ -244,11 +244,11 @@ app.put("/api/admin/menu/:id", requireAdmin, async (req, res) => {
           price = $3,
           category = $4,
           available = $5,
-          trStyle = $6
+          trstyle = $6
       WHERE id = $7
       RETURNING *
       `,
-      [name, description, price, category, available, trStyle, id]
+      [name, description, price, category, available, trstyle, id]
     );
 
     if (result.rows.length === 0) {
@@ -286,7 +286,7 @@ app.post("/api/admin/seed-menu", requireAdmin, async (req, res) => {
   try {
     const result = await pool.query(`
       INSERT INTO menu_items
-      (name, description, price, category, image_url, available,trStyle)
+      (name, description, price, category, image_url, available,trstyle)
       VALUES
       ('Brik à l''Œuf & Thon', 'Feuille de malsouka croustillante garnie d''un œuf coulant, de thon de qualité, d''oignons émincés, de persil frais et de câpres, frite à la minute.', 6, 'Entrées & Salades', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810823/dish_brik_t11opf.jpg', true, false),
 
