@@ -112,7 +112,7 @@ app.get("/api/db-test", async (req, res) => {
   }
 });
 
-app.post("/api/login", loginLimiter, async (req, res) => {
+app.post("/api/login", loginLimiter, loginSlowDown, async (req, res) => {
   console.log("LOGIN ROUTE HIT");
   console.log("Body received:", req.body);
   console.log("Password received:", req.body.password ? "YES" : "NO");
