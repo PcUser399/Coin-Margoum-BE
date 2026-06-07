@@ -223,7 +223,7 @@ app.put("/api/admin/menu/:id", requireAdmin, async (req, res) => {
           price = $3,
           category = $4,
           available = $5,
-          trStyle = $6,
+          trStyle = $6
       WHERE id = $7
       RETURNING *
       `,
