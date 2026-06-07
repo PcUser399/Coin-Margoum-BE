@@ -193,6 +193,22 @@ app.get("/api/menu", async (req, res) => {
   }
 });
 
+app.get("/api/menu", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT *
+      FROM menu_items
+      WHERE available = true
+      ORDER BY category, id;
+    `);
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to load menu" });
+  }
+});
+
 app.post("/api/admin/menu", requireAdmin, async (req, res) => {
   try {
     const { name, description, price, category, available, trStyle } = req.body;
@@ -204,7 +220,7 @@ app.post("/api/admin/menu", requireAdmin, async (req, res) => {
       VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *
       `,
-      [name, description, price, category, null, available, trStyle ?? true]
+      [name, description, price, category, null, available, trStyle]
     );
 
     res.status(201).json(result.rows[0]);
