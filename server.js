@@ -1,34 +1,23 @@
-
 require("dotenv").config();
+
 const express = require("express");
-const session = require("express-session");
 const bcrypt = require("bcrypt");
 const rateLimit = require("express-rate-limit");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-
 app.use(express.json());
 
 app.use(cors({
-  origin: true, // FOR TESTING ONLY . MUST CHANGE TO process.env.FRONTEND_URL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  origin: process.env.FRONTEND_URL , 
   credentials: true
 }));
 
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  rolling: true,
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 1000 * 60 * 60 * 2
-  }
-}));
+app.use(cookieParser());
 
 const loginLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
@@ -37,11 +26,23 @@ const loginLimiter = rateLimit({
 });
 
 function requireAdmin(req, res, next) {
-  if (req.session && req.session.isAdmin) {
-    return next();
+  const token = req.cookies.admin_token;
+
+  if (!token) {
+    return res.status(401).json({ error: "Not authorized" });
   }
 
-  return res.status(401).json({ error: "Not authorized" });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (decoded.isAdmin === true) {
+      return next();
+    }
+
+    return res.status(401).json({ error: "Not authorized" });
+  } catch {
+    return res.status(401).json({ error: "Not authorized" });
+  }
 }
 
 app.post("/api/login", loginLimiter, async (req, res) => {
@@ -60,16 +61,30 @@ app.post("/api/login", loginLimiter, async (req, res) => {
     return res.status(401).json({ error: "Wrong password" });
   }
 
-  req.session.isAdmin = true;
+  const token = jwt.sign(
+    { isAdmin: true },
+    process.env.JWT_SECRET,
+    { expiresIn: "2h" }
+  );
+
+  res.cookie("admin_token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 2
+  });
 
   return res.json({ success: true });
 });
 
 app.post("/api/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.clearCookie("connect.sid");
-    res.json({ success: true });
+  res.clearCookie("admin_token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax"
   });
+
+  res.json({ success: true });
 });
 
 app.get("/api/admin/check", requireAdmin, (req, res) => {
@@ -81,6 +96,10 @@ app.get("/api/admin/orders", requireAdmin, (req, res) => {
     { id: 1, item: "Pizza", status: "pending" },
     { id: 2, item: "Burger", status: "ready" }
   ]);
+});
+
+app.get("/", (req, res) => {
+  res.send("API is running");
 });
 
 app.listen(PORT, () => {
