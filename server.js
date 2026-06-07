@@ -11,6 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
+const slowDown = require("express-slow-down");
 
 const { Pool } = require("pg");
 
@@ -66,8 +67,16 @@ app.set("trust proxy", 1);
 
 const loginLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
-  max: 5,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
   message: { error: "Too many login attempts. Try again later." }
+});
+
+const loginSlowDown = slowDown({
+  windowMs: 10 * 60 * 1000,
+  delayAfter: 2,
+  delayMs: () => 1000
 });
 
 function requireAdmin(req, res, next) {
