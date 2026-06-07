@@ -46,6 +46,10 @@ async function initDB() {
         created_at TIMESTAMP DEFAULT NOW()
       );
     `);
+    await pool.query(`
+      ALTER TABLE menu_items
+      ADD COLUMN IF NOT EXISTS trstyle BOOLEAN DEFAULT false;
+    `);
 
     console.log("Database table ready");
   } catch (err) {
