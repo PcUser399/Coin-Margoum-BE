@@ -267,9 +267,9 @@ app.post("/api/admin/seed-menu", requireAdmin, async (req, res) => {
       INSERT INTO menu_items
       (name, description, price, category, image_url, available)
       VALUES
-      ('Brik à l''Œuf & Thon', 'Feuille de malsouka croustillante garnie d''un œuf coulant, de thon de qualité, d''oignons émincés, de persil frais et de câpres, frite à la minute.', 6, 'Entrées', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810823/dish_brik_t11opf.jpg', true, false),
+      ('Brik à l''Œuf & Thon', 'Feuille de malsouka croustillante garnie d''un œuf coulant, de thon de qualité, d''oignons émincés, de persil frais et de câpres, frite à la minute.', 6, 'Entrées & Salades', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810823/dish_brik_t11opf.jpg', true, false),
 
-      ('Lablabi Traditionnel', 'Soupe de pois chiches fondants mijotés dans un bouillon épicé, garnie de thon, d''un œuf poché, de câpres, d''olives et d''une généreuse cuillère de harissa maison.', 8, 'Plats tunisiens', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810750/dish_lablabi_onjz6c.webp', true, true),
+      ('Lablabi Traditionnel', 'Soupe de pois chiches fondants mijotés dans un bouillon épicé, garnie de thon, d''un œuf poché, de câpres, d''olives et d''une généreuse cuillère de harissa maison.', 8, 'Plats Traditionnels', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810750/dish_lablabi_onjz6c.webp', true, true),
 
       ('Chakchouka Maison', 'Ragoût de poivrons rouges et verts, tomates fraîches et oignons confits, cuit lentement avec des épices orientales, garni d''œufs pochés et servi avec du pain grillé.', 10, 'Plats tunisiens', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810819/dish_chakchouka_dy3ay8.webp', true, true),
 
