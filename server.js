@@ -259,40 +259,40 @@ app.delete("/api/admin/menu/:id", requireAdmin, async (req, res) => {
   }
 });
 
-app.post("/api/admin/seed-menu", requireAdmin, async (req, res) => {
-  try {
-    const result = await pool.query(`
-      INSERT INTO menu_items
-      (name, description, price, category, image_url, available)
-      VALUES
-      ('Brik à l''Œuf & Thon', 'Feuille de malsouka croustillante garnie d''un œuf coulant, de thon de qualité, d''oignons émincés, de persil frais et de câpres, frite à la minute.', 6, 'Entrées', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810823/dish_brik_t11opf.jpg', true),
+// app.post("/api/admin/seed-menu", requireAdmin, async (req, res) => {
+//   try {
+//     const result = await pool.query(`
+//       INSERT INTO menu_items
+//       (name, description, price, category, image_url, available)
+//       VALUES
+//       ('Brik à l''Œuf & Thon', 'Feuille de malsouka croustillante garnie d''un œuf coulant, de thon de qualité, d''oignons émincés, de persil frais et de câpres, frite à la minute.', 6, 'Entrées', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810823/dish_brik_t11opf.jpg', true),
 
-      ('Lablabi Traditionnel', 'Soupe de pois chiches fondants mijotés dans un bouillon épicé, garnie de thon, d''un œuf poché, de câpres, d''olives et d''une généreuse cuillère de harissa maison.', 8, 'Plats tunisiens', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810750/dish_lablabi_onjz6c.webp', true),
+//       ('Lablabi Traditionnel', 'Soupe de pois chiches fondants mijotés dans un bouillon épicé, garnie de thon, d''un œuf poché, de câpres, d''olives et d''une généreuse cuillère de harissa maison.', 8, 'Plats tunisiens', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810750/dish_lablabi_onjz6c.webp', true),
 
-      ('Chakchouka Maison', 'Ragoût de poivrons rouges et verts, tomates fraîches et oignons confits, cuit lentement avec des épices orientales, garni d''œufs pochés et servi avec du pain grillé.', 10, 'Plats tunisiens', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810819/dish_chakchouka_dy3ay8.webp', true),
+//       ('Chakchouka Maison', 'Ragoût de poivrons rouges et verts, tomates fraîches et oignons confits, cuit lentement avec des épices orientales, garni d''œufs pochés et servi avec du pain grillé.', 10, 'Plats tunisiens', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810819/dish_chakchouka_dy3ay8.webp', true),
 
-      ('Couscous à l''Agneau', 'Semoule de blé fine cuite à la vapeur au-dessus d''un bouillon aromatique, garnie de morceaux d''agneau fondants, de carottes, de courges et de pois chiches.', 28, 'Couscous', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810823/dish_couscous_agneau_fkoplc.webp', true),
+//       ('Couscous à l''Agneau', 'Semoule de blé fine cuite à la vapeur au-dessus d''un bouillon aromatique, garnie de morceaux d''agneau fondants, de carottes, de courges et de pois chiches.', 28, 'Couscous', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810823/dish_couscous_agneau_fkoplc.webp', true),
 
-      ('Couscous au Poisson', 'Semoule fine cuite à la vapeur, servie avec un poisson entier grillé aux épices tunisiennes, des légumes confits, de la salade méchouia et une sauce harissa maison.', 32, 'Couscous', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810802/dish_couscous_poisson_hpipm8.webp', true),
+//       ('Couscous au Poisson', 'Semoule fine cuite à la vapeur, servie avec un poisson entier grillé aux épices tunisiennes, des légumes confits, de la salade méchouia et une sauce harissa maison.', 32, 'Couscous', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810802/dish_couscous_poisson_hpipm8.webp', true),
 
-      ('Riz Djerbien au Poulet', 'Riz à grains fins cuit à la vapeur, mélangé intimement avec du poulet mariné en dés, des blettes, du persil, des carottes et des épices orientales traditionnelles.', 22, 'Plats tunisiens', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810808/dish_riz_djerbien_iaqpdy.jpg', true),
+//       ('Riz Djerbien au Poulet', 'Riz à grains fins cuit à la vapeur, mélangé intimement avec du poulet mariné en dés, des blettes, du persil, des carottes et des épices orientales traditionnelles.', 22, 'Plats tunisiens', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810808/dish_riz_djerbien_iaqpdy.jpg', true),
 
-      ('Ojja Tunisienne aux Merguez', 'Ragoût mijoté de sauce tomate fraîche, piments verts piquants, harissa locale et épices, garni de merguez artisanales grillées et d''œufs pochés coulants.', 18, 'Plats tunisiens', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810799/dish_ojja_tmkfvu.webp', true),
+//       ('Ojja Tunisienne aux Merguez', 'Ragoût mijoté de sauce tomate fraîche, piments verts piquants, harissa locale et épices, garni de merguez artisanales grillées et d''œufs pochés coulants.', 18, 'Plats tunisiens', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810799/dish_ojja_tmkfvu.webp', true),
 
-      ('Tajine Tunisien Traditionnel', 'Omelette épaisse au four à base d''œufs, poulet émietté, pommes de terre cubes, fromage râpé, persil et épices locales, cuite lentement jusqu''à dorure.', 12, 'Entrées', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810818/dish_tajine_blwqnn.jpg', true),
+//       ('Tajine Tunisien Traditionnel', 'Omelette épaisse au four à base d''œufs, poulet émietté, pommes de terre cubes, fromage râpé, persil et épices locales, cuite lentement jusqu''à dorure.', 12, 'Entrées', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810818/dish_tajine_blwqnn.jpg', true),
 
-      ('Kafteji Tunisien Maison', 'Mélange frit et concassé de légumes frais, courge, pommes de terre, piments, tomates, surmonté d''œufs frits coulants et assaisonné d''huile d''olive.', 14, 'Plats tunisiens', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810796/dish_kafteji_ycwya2.jpg', true),
+//       ('Kafteji Tunisien Maison', 'Mélange frit et concassé de légumes frais, courge, pommes de terre, piments, tomates, surmonté d''œufs frits coulants et assaisonné d''huile d''olive.', 14, 'Plats tunisiens', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810796/dish_kafteji_ycwya2.jpg', true),
 
-      ('Poisson Grillé à la Tunisienne', 'Poisson entier frais du jour mariné dans un mélange de chermoula tunisienne, grillé au charbon, accompagné de salade méchouia, riz à la tomate, olives et câpres.', 38, 'Poissons', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810802/dish_poisson_grille_esulzo.webp', true)
-      RETURNING *;
-    `);
+//       ('Poisson Grillé à la Tunisienne', 'Poisson entier frais du jour mariné dans un mélange de chermoula tunisienne, grillé au charbon, accompagné de salade méchouia, riz à la tomate, olives et câpres.', 38, 'Poissons', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810802/dish_poisson_grille_esulzo.webp', true)
+//       RETURNING *;
+//     `);
 
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Seed failed" });
-  }
-});
+//     res.json(result.rows);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Seed failed" });
+//   }
+// });
 
 
 app.get("/", (req, res) => {
