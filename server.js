@@ -9,6 +9,8 @@ const cookieParser = require("cookie-parser");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
 
 const { Pool } = require("pg");
 
@@ -18,6 +20,15 @@ const pool = new Pool({
     ? { rejectUnauthorized: false }
     : false
 });
+
+const upload = multer({ storage: multer.memoryStorage() });
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
 
 async function initDB() {
   try {
@@ -115,7 +126,8 @@ app.post("/api/login", loginLimiter, async (req, res) => {
   res.cookie("admin_token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "none",
+    secure: true,
     maxAge: 1000 * 60 * 60 * 2
   });
 
@@ -126,7 +138,8 @@ app.post("/api/logout", (req, res) => {
   res.clearCookie("admin_token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax"
+    sameSite: "none",
+    secure: true
   });
 
   res.json({ success: true });
@@ -154,7 +167,7 @@ app.get("/api/menu", async (req, res) => {
 
 app.post("/api/admin/menu", requireAdmin, async (req, res) => {
   try {
-    const { name, description, price, category, image_url, available } = req.body;
+    const { name, description, price, category, available } = req.body;
 
     const result = await pool.query(
       `
@@ -163,7 +176,7 @@ app.post("/api/admin/menu", requireAdmin, async (req, res) => {
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
       `,
-      [name, description, price, category, image_url, available ?? true]
+      [name, description, price, category, null, available ?? true]
     );
 
     res.status(201).json(result.rows[0]);
@@ -176,7 +189,7 @@ app.post("/api/admin/menu", requireAdmin, async (req, res) => {
 app.put("/api/admin/menu/:id", requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, category, image_url, available } = req.body;
+    const { name, description, price, category, available } = req.body;
 
     const result = await pool.query(
       `
@@ -185,12 +198,11 @@ app.put("/api/admin/menu/:id", requireAdmin, async (req, res) => {
           description = $2,
           price = $3,
           category = $4,
-          image_url = $5,
-          available = $6
-      WHERE id = $7
+          available = $5
+      WHERE id = $6
       RETURNING *
       `,
-      [name, description, price, category, image_url, available, id]
+      [name, description, price, category, available, id]
     );
 
     if (result.rows.length === 0) {
@@ -246,6 +258,61 @@ app.post("/api/admin/seed-menu", requireAdmin, async (req, res) => {
 app.get("/", (req, res) => {
   res.send("API is running");
 });
+
+app.post("/api/admin/menu/:id/image",requireAdmin,upload.single("image"),async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      if (!req.file) {
+        return res.status(400).json({
+          error: "No image uploaded"
+        });
+      }
+
+      const uploadResult = await new Promise(
+        (resolve, reject) => {
+          cloudinary.uploader.upload_stream(
+            {
+              folder: "restaurant-menu",
+              public_id: `food_${id}`,
+              overwrite: true
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          ).end(req.file.buffer);
+        }
+      );
+
+      const dbResult = await pool.query(
+        `
+        UPDATE menu_items
+        SET image_url = $1
+        WHERE id = $2
+        RETURNING *
+        `,
+        [uploadResult.secure_url, id]
+      );
+
+      if (dbResult.rows.length === 0) {
+        return res.status(404).json({
+          error: "Food not found"
+        });
+      }
+
+      res.json(dbResult.rows[0]);
+
+    } catch (err) {
+      console.error(err);
+
+      res.status(500).json({
+        error: "Image upload failed"
+      });
+    }
+  }
+);
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
