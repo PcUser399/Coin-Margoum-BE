@@ -265,7 +265,7 @@ app.post("/api/admin/seed-menu", requireAdmin, async (req, res) => {
   try {
     const result = await pool.query(`
       INSERT INTO menu_items
-      (name, description, price, category, image_url, available)
+      (name, description, price, category, image_url, available,trStyle)
       VALUES
       ('Brik à l''Œuf & Thon', 'Feuille de malsouka croustillante garnie d''un œuf coulant, de thon de qualité, d''oignons émincés, de persil frais et de câpres, frite à la minute.', 6, 'Entrées & Salades', 'https://res.cloudinary.com/dr32sg3zs/image/upload/v1780810823/dish_brik_t11opf.jpg', true, false),
 
