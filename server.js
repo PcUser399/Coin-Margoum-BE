@@ -256,7 +256,7 @@ app.delete("/api/admin/menu/:id", requireAdmin, async (req, res) => {
 
     res.json({ success: true, deleted: result.rows[0] });
   } catch (err) {
-    console.error(err);
+    console.error("SEED ERROR:", err.message);
     res.status(500).json({ error: "Failed to delete menu item" });
   }
 });
