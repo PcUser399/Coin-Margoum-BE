@@ -62,6 +62,8 @@ app.use(cors({
 
 app.use(cookieParser());
 
+app.set("trust proxy", 1);
+
 const loginLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 5,
