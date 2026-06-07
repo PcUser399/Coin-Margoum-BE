@@ -104,16 +104,27 @@ app.get("/api/db-test", async (req, res) => {
 });
 
 app.post("/api/login", loginLimiter, async (req, res) => {
+  console.log("LOGIN ROUTE HIT");
+  console.log("Body received:", req.body);
+  console.log("Password received:", req.body.password ? "YES" : "NO");
+
   const { password } = req.body;
 
   if (!password) {
+    console.log("No password sent");
     return res.status(400).json({ error: "Password required" });
   }
+
+  console.time("bcrypt compare");
 
   const isCorrect = await bcrypt.compare(
     password,
     process.env.ADMIN_PASSWORD_HASH
   );
+
+  console.timeEnd("bcrypt compare");
+
+  console.log("Password correct:", isCorrect);
 
   if (!isCorrect) {
     return res.status(401).json({ error: "Wrong password" });
@@ -127,11 +138,12 @@ app.post("/api/login", loginLimiter, async (req, res) => {
 
   res.cookie("admin_token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "none",
     secure: true,
+    sameSite: "none",
     maxAge: 1000 * 60 * 60 * 2
   });
+
+  console.log("Login success, cookie sent");
 
   return res.json({ success: true });
 });
